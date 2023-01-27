@@ -7,8 +7,8 @@
 //   })
 
 const fs = require('fs');
-
 var AWS = require('aws-sdk');
+const uuid = require("uuid").v4;
 
 var ep = new AWS.Endpoint('http://localhost:4566');
 
@@ -28,16 +28,15 @@ s3.listBuckets(function (err, data) {
     }
 });
 
-function uploadFile(file) {
-    const fileStream = fs.createReadStream(file.path)
+exports.s3Upload = async (file) =>{
+    // const fileStream = fs.createReadStream(file.path)
   
     const uploadParams = {
-      Bucket: bucketName,
-      Body: fileStream,
-      Key: file.filename
+      Bucket: 'my-bucket',    
+      Key: `uplolads/${file.filename}`, 
+      Body: "upload", 
     }
   
-    return s3.upload(uploadParams).promise()
+    return await s3.upload(uploadParams).promise()
   }
-
 
