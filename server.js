@@ -1,26 +1,34 @@
 //Imports
 const express = require('express');
 const multer = require('multer');
-const { s3Upload } = require('./s3')
+const { s3Upload, list } = require('./s3')
 
 const app = express(); //express
 
-const storage = multer.memoryStorage();
+const storage = multer.memoryStorage(); //create memory store
 
-const upload = multer({
-    storage,    
-    limits: { fileSize: 1000000000 },
-  }); //multer config
+const upload = multer({storage: storage}); //multer config
 
 //POST requests
-app.post('/upload', upload.array("file"),async (req, res) => {
+app.post('/upload', upload.single("file"), async (req, res) => {
     try {
-        const results = await s3Upload(req.files);
+        const results = await s3Upload(req.file); 
         console.log(results);
         return res.json({ status: "success" });
       } catch (err) {
         console.log(err);
       }
+})
+
+//GET 
+
+app.get('/files', async (req, res) => {
+  let {bucketName} = req.body;
+  try {
+    list(bucketName);
+  } catch (error) {
+    console.log(err);
+  }
 })
 
 
